@@ -1,25 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import React , {useState, useEffect}from "react";
+import Datatable from "./datatable";
 
-function App() {
+require("es6-promise").polyfill();
+require("isomorphic-fetch");
+
+export default function App() {
+  const [data, setData] = useState([]);
+  const [q, setQ] = useState("");
+
+  useEffect(()=>{
+    fetch("https://vast-shore-74260.herokuapp.com/banks?city=MUMBAI")
+    .then(response => response.json())
+    .then((json) => setData(json));
+  }, [])
+
+  function search(rows) {
+    return rows.filter((row) => row.branch.toLowerCase().indexOf(q) > -1);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <div>
+        <input type="text" value={q} onChange={(e)=> setQ(e.target.value)}/>
+      </div>
+      <div>
+        <Datatable data={search(data)} />
+      </div>
     </div>
   );
 }
-
-export default App;
